@@ -11,6 +11,12 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Double = Mat
     })
 
     companion object {
+        fun map(input: Matrix, mapper: (Double) -> Double): Matrix {
+            val output = input.copy()
+            output.map(mapper)
+            return output
+        }
+
         val defaultGenerator = { _: Int, _: Int ->
             0.0
         }
@@ -32,7 +38,20 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Double = Mat
 
     operator fun plus(other: Matrix) = elementWiseOperation(other, Double::plus)
     operator fun minus(other: Matrix) = elementWiseOperation(other, Double::minus)
-    operator fun times(other: Matrix) = elementWiseOperation(other, Double::times)
+    operator fun times(other: Matrix) : Matrix {
+
+        if(other.rows == this.rows && other.cols == this.cols)
+            return elementWiseOperation(other, Double::times)
+        else if (other.rows == this.cols)
+            return Matrix(this.rows, other.cols) { i,j ->
+                var sum = 0.0
+                for (k in 0 until this.cols)
+                    sum += this.data[i][k] * other.data[k][j]
+                return@Matrix sum
+            }
+        else
+            throw UnsupportedOperationException()
+    }
     operator fun div(other: Matrix) = elementWiseOperation(other, Double::div)
 
     private fun scalarOperation(scalar: Double, operator: (Double, Double) -> Double): Matrix {
@@ -44,8 +63,7 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Double = Mat
     }
 
     private fun elementWiseOperation(other: Matrix, operator: (Double, Double) -> Double): Matrix {
-        check(other.cols == this.cols)
-        check(other.rows == this.rows)
+        check(other.rows == this.cols)
 
         val result = this.copy()
         result.map { x, y, value ->
@@ -68,6 +86,9 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Double = Mat
         }.toTypedArray()
     }
 
+    fun map(mapper:(Double) -> Double) {
+        return map { _, _, value -> mapper(value) }
+    }
 
     override fun toString(): String {
         val sb = StringBuilder()
