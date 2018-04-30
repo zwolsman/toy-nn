@@ -38,6 +38,25 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Int = Matrix
         return result
     }
 
+    operator fun plus(scalar: Int) : Matrix {
+        val result = this.copy()
+        result.map {_,_, value ->
+            value + scalar
+        }
+        return result
+    }
+
+    operator fun plus(m2: Matrix): Matrix {
+        check(m2.cols == this.cols)
+        check(m2.rows == this.rows)
+
+        val result = this.copy()
+        result.map {x,y, value ->
+            value + m2.data[x][y]
+        }
+        return result
+    }
+
     fun copy() = Matrix(data)
 
     fun map(mapper:(Int, Int, Int) -> Int) {

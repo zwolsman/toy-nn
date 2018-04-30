@@ -44,4 +44,21 @@ internal class MatrixTest {
             val result = m1 * m2
         }
     }
+
+    @Test
+    fun `Add scalar to matrix`() {
+        val matrix = Matrix(arrayOf(arrayOf(1,2), arrayOf(3,4)))
+        val scalar = 0
+        val result = matrix + scalar
+        assertArrayEquals(matrix.data, result.data)
+    }
+
+    @Test
+    fun `Add element wise`() {
+        val m1 = Matrix(arrayOf(arrayOf(1,2), arrayOf(3,4)))
+        val m2 = Matrix(arrayOf(arrayOf(5,6), arrayOf(7,8)))
+        val result = m1 + m2
+        val target = Matrix(arrayOf(arrayOf(6, 8), arrayOf(10, 12)))
+        assertArrayEquals(target.data, result.data)
+    }
 }
