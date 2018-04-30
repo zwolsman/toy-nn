@@ -50,7 +50,7 @@ class NeuralNetwork(val inputNodes: Int, val hiddenNodes: Int, val outputNodes: 
     }
 
     fun train(inputs:Matrix, targets:Matrix) {
-        val hidden = (weightsIh * inputs) + biasH
+        val hidden = (inputs * weightsIh) + biasH
         hidden.map(activiationFunction.x)
 
 
@@ -79,5 +79,15 @@ class NeuralNetwork(val inputNodes: Int, val hiddenNodes: Int, val outputNodes: 
         val weightsIhDeltas = hiddenGradient * inputsT
         weightsIh += weightsIhDeltas
         biasH += hiddenGradient
+    }
+
+    fun predict(inputs:Matrix) : Matrix {
+        val hidden = (weightsIh * inputs) + biasH
+        hidden.map(activiationFunction.x)
+
+        val output = (weightsHo * hidden) + biasO
+        output.map(activiationFunction.x)
+
+        return output
     }
 }
