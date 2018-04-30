@@ -11,6 +11,12 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Double = Mat
     })
 
     companion object {
+        fun map(input: Matrix, mapper: (Double) -> Double): Matrix {
+            val output = input.copy()
+            output.map(mapper)
+            return output
+        }
+
         val defaultGenerator = { _: Int, _: Int ->
             0.0
         }
@@ -66,6 +72,10 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Double = Mat
                 mapper(x, y, col)
             }.toTypedArray()
         }.toTypedArray()
+    }
+
+    fun map(mapper:(Double) -> Double) {
+        return map { _, _, value -> mapper(value) }
     }
 
 
