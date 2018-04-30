@@ -13,7 +13,7 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Int = Matrix
         }
     }
 
-    var data = Array(rows ) { x ->
+    var data = Array(rows) { x ->
         Array(cols) { y ->
             generator(x, y)
         }
@@ -29,33 +29,49 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Int = Matrix
     operator fun times(other: Matrix) = elementWiseOperation(other, Math::multiplyExact)
     operator fun div(other: Matrix) = elementWiseOperation(other, Math::floorDiv)
 
-    private fun scalarOperation(scalar:Int, operator: (Int, Int) -> Int) : Matrix {
+    private fun scalarOperation(scalar: Int, operator: (Int, Int) -> Int): Matrix {
         val result = this.copy()
-        result.map {_,_, value ->
+        result.map { _, _, value ->
             operator(value, scalar)
         }
         return result
     }
 
-    private fun elementWiseOperation(other: Matrix, operator: (Int, Int) -> Int) : Matrix {
+    private fun elementWiseOperation(other: Matrix, operator: (Int, Int) -> Int): Matrix {
         check(other.cols == this.cols)
         check(other.rows == this.rows)
 
         val result = this.copy()
-        result.map {x,y, value ->
-            operator(value,other.data[x][y])
+        result.map { x, y, value ->
+            operator(value, other.data[x][y])
         }
         return result
     }
 
+    fun transpose() = Matrix(cols, rows) { x, y ->
+        data[y][x]
+    }
+
     fun copy() = Matrix(data)
 
-    fun map(mapper:(Int, Int, Int) -> Int) {
-        data = data.mapIndexed {x, row ->
+    fun map(mapper: (Int, Int, Int) -> Int) {
+        data = data.mapIndexed { x, row ->
             row.mapIndexed { y, col ->
-                mapper(x,y, col)
+                mapper(x, y, col)
             }.toTypedArray()
         }.toTypedArray()
     }
 
+
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.appendln("[MATRIX]")
+
+        for (row in 0 until rows) {
+            sb.append("  ")
+            sb.appendln(data[row].joinToString())
+        }
+
+        return sb.toString()
+    }
 }

@@ -2,6 +2,7 @@ package com.zwolsman
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import kotlin.math.exp
 
 internal class MatrixTest {
 
@@ -60,5 +61,14 @@ internal class MatrixTest {
         val result = m1 + m2
         val target = Matrix(arrayOf(arrayOf(6, 8), arrayOf(10, 12)))
         assertArrayEquals(target.data, result.data)
+    }
+
+    @Test
+    fun `Transpose matrix`() {
+        val m1 = Matrix(arrayOf(arrayOf(1,2,3), arrayOf(3,4,5)))
+        val result = m1.transpose()
+        val expected = Matrix(arrayOf(arrayOf(1,3), arrayOf(2,4), arrayOf(3,5)))
+
+        assertArrayEquals(expected.data, result.data)
     }
 }
