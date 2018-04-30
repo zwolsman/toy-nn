@@ -48,4 +48,36 @@ class NeuralNetwork(val inputNodes: Int, val hiddenNodes: Int, val outputNodes: 
         biasH.map { _, _, value -> mutateFunction(value) }
         biasO.map { _, _, value -> mutateFunction(value) }
     }
+
+    fun train(inputs:Matrix, targets:Matrix) {
+        val hidden = (weightsIh * inputs) + biasH
+        hidden.map(activiationFunction.x)
+
+
+        val outputs = (weightsHo * hidden) + biasO
+        outputs.map(activiationFunction.x)
+
+        val errors = targets - outputs
+
+        val gradients = Matrix.map(outputs, activiationFunction.y) * errors * learningRate
+
+        //Calculate delta's
+        val hiddenT = hidden.transpose()
+        val correct = gradients * hiddenT
+
+        //Correct them for the output layers
+        weightsHo += correct
+        biasO += gradients
+
+        //Do the same for the hidden layers
+        val whoT = weightsHo.transpose()
+        val hiddenErrors = whoT * errors
+
+        val hiddenGradient = Matrix.map(hidden, activiationFunction.y) * hiddenErrors * learningRate
+
+        val inputsT = inputs.transpose()
+        val weightsIhDeltas = hiddenGradient * inputsT
+        weightsIh += weightsIhDeltas
+        biasH += hiddenGradient
+    }
 }
