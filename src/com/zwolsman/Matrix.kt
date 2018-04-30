@@ -19,40 +19,31 @@ class Matrix(val rows: Int, val cols: Int, generator: (Int, Int) -> Int = Matrix
         }
     }
 
-    operator fun times(scalar: Int): Matrix {
+    operator fun plus(scalar: Int) = scalarOperation(scalar, Math::addExact)
+    operator fun minus(scalar: Int) = scalarOperation(scalar, Math::subtractExact)
+    operator fun times(scalar: Int) = scalarOperation(scalar, Math::multiplyExact)
+    operator fun div(scalar: Int) = scalarOperation(scalar, Math::floorDiv)
+
+    operator fun plus(other: Matrix) = elementWiseOperation(other, Math::addExact)
+    operator fun minus(other: Matrix) = elementWiseOperation(other, Math::subtractExact)
+    operator fun times(other: Matrix) = elementWiseOperation(other, Math::multiplyExact)
+    operator fun div(other: Matrix) = elementWiseOperation(other, Math::floorDiv)
+
+    private fun scalarOperation(scalar:Int, operator: (Int, Int) -> Int) : Matrix {
         val result = this.copy()
         result.map {_,_, value ->
-            value * scalar
+            operator(value, scalar)
         }
         return result
     }
 
-    operator fun times(m2: Matrix): Matrix {
-        check(m2.cols == this.cols)
-        check(m2.rows == this.rows)
+    private fun elementWiseOperation(other: Matrix, operator: (Int, Int) -> Int) : Matrix {
+        check(other.cols == this.cols)
+        check(other.rows == this.rows)
 
         val result = this.copy()
         result.map {x,y, value ->
-            value * m2.data[x][y]
-        }
-        return result
-    }
-
-    operator fun plus(scalar: Int) : Matrix {
-        val result = this.copy()
-        result.map {_,_, value ->
-            value + scalar
-        }
-        return result
-    }
-
-    operator fun plus(m2: Matrix): Matrix {
-        check(m2.cols == this.cols)
-        check(m2.rows == this.rows)
-
-        val result = this.copy()
-        result.map {x,y, value ->
-            value + m2.data[x][y]
+            operator(value,other.data[x][y])
         }
         return result
     }
